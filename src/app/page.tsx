@@ -6,6 +6,7 @@ import ContextMenu from "./components/other/ContextMenu";
 import WallpaperWindow from "./components/other/WallpaperWindow";
 import Github from "./components/windows/main_content_screens/Github";
 import Note from "./components/windows/main_content_screens/Note";
+import CalendarWindow from "./components/windows/main_content_screens/CalendarWindow"; // Поправил импорт под твою структуру папок
 import Navigation from "./components/other/Navigation";
 import Dock from "./components/other/Dock";
 
@@ -14,8 +15,8 @@ const Page = () => {
   const [isWindowOpen, setIsWindowOpen] = useState(false);
   const [menu, setMenu] = useState<{ x: number, y: number } | null>(null);
   const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault(); // Browser menu rokne ke liye
-    e.stopPropagation(); // Event ko spread hone se rokne ke liye
+    e.preventDefault(); 
+    e.stopPropagation(); 
     setMenu({ x: e.clientX, y: e.clientY });
   };
 
@@ -43,7 +44,7 @@ const Page = () => {
           x={menu?.x || 0}
           y={menu?.y || 0}
           onClose={() => setMenu(null)}
-          onChangeWallpaper={() => setIsWindowOpen(true)} // Window open karega
+          onChangeWallpaper={() => setIsWindowOpen(true)} 
         />
       )}
 
@@ -57,6 +58,8 @@ const Page = () => {
       {windowsState.github && <Github windowName="github" setWindowsState={setWindowsState} />}
       {windowsState.note && <Note windowName="note" setWindowsState={setWindowsState} />}
       
+      {/* Добавил рендер окна календаря */}
+      {windowsState.calender && <CalendarWindow windowName="calender" setWindowsState={setWindowsState} />}
 
       <Dock setWindowsState={setWindowsState} windowsState={windowsState} />
     </main>

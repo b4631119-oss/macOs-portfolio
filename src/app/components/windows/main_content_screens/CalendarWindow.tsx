@@ -15,8 +15,8 @@ const CalendarWindow = ({ windowName, setWindowsState, title = "TaskMate Calenda
         <MacWindow
             x={150}
             y={80}
-            width="75vw" 
-            height="75vh"
+            width="80vw" 
+            height="90vh"
             title={title}
             onClose={() => setWindowsState((prev) => ({ ...prev, [windowName]: false }))}
         >
