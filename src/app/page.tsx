@@ -22,12 +22,8 @@ const Page = () => {
   const [windowsState, setWindowsState] = useState({
     github: false,
     note: false,
-    resume: false,
     cli: false,
     calender: false,
-    link: false,
-    mail: false,
-    pdf: false
   })
   return (
     <main
@@ -60,10 +56,8 @@ const Page = () => {
 
       {windowsState.github && <Github windowName="github" setWindowsState={setWindowsState} />}
       {windowsState.note && <Note windowName="note" setWindowsState={setWindowsState} />}
-      {/* {windowsState.resume && <Resume windowName="resume" setWindowsState={setWindowsState} />}
-      {windowsState.cli && <Cli windowName="cli" setWindowsState={setWindowsState} />} */}
+      
 
-      {/* Bottom Dock fix rahega */}
       <Dock setWindowsState={setWindowsState} windowsState={windowsState} />
     </main>
   );

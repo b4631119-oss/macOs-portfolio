@@ -71,12 +71,8 @@ export const projects = [
 ];
 
 export interface WindowsState {
-  github: boolean;
+ github: boolean;
   note: boolean;
-  resume: boolean;
   cli: boolean;
   calender: boolean;
-  link: boolean;
-  mail: boolean;
-  pdf: boolean;
 }
