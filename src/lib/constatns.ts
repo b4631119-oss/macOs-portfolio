@@ -74,7 +74,6 @@ export interface WindowsState {
   github: boolean;
   note: boolean;
   resume: boolean;
-  spotify: boolean;
   cli: boolean;
   calender: boolean;
   link: boolean;

@@ -23,7 +23,6 @@ const Page = () => {
     github: false,
     note: false,
     resume: false,
-    spotify: false,
     cli: false,
     calender: false,
     link: false,
