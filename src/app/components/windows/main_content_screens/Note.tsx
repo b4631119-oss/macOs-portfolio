@@ -15,7 +15,7 @@ const Note = ({ windowName, setWindowsState, title = "Cuaderno — Цифров�
         <MacWindow
             x={100}
             y={50}
-            width="75vw" // Сделаем чуть шире, чтобы сайту тетради было просторно
+            width="75vw" 
             height="75vh"
             title={title}
             onClose={() => setWindowsState((prev) => ({ ...prev, [windowName]: false }))}
