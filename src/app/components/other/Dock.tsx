@@ -2,10 +2,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Dispatch, SetStateAction } from "react";
 
 interface WindowsState {
-    github: boolean;
+  github: boolean;
   note: boolean;
   cli: boolean;
   calender: boolean;
+  calculator: boolean;
 }
 
 const Dock = ({ setWindowsState, windowsState }: { setWindowsState: Dispatch<SetStateAction<WindowsState>>, windowsState: WindowsState }) => {
@@ -13,7 +14,8 @@ const Dock = ({ setWindowsState, windowsState }: { setWindowsState: Dispatch<Set
         { src: "github.svg", alt: "GitHub", color: "bg-gradient-to-b from-[#444d56] to-[#24292e]", onClick: () => setWindowsState((prev) => ({ ...prev, github: !windowsState.github })) }, // 3D Slate
         { src: "calender.svg", alt: "Calendar", color: "bg-gradient-to-b from-[#7A83FF] to-[#5856D6]", onClick: () => setWindowsState((prev) => ({ ...prev, calender: !windowsState.calender })) }, // 3D Red
         { src: "cli.svg", alt: "Terminal", color: "bg-gradient-to-b from-[#757575] to-[#4d4d4d]", onClick: () => setWindowsState((prev) => ({ ...prev, cli: !windowsState.cli })) }, // 3D Gray
-        { src: "note.svg", alt: "Notes", color: "bg-gradient-to-b from-[#ffd54f] via-[#ffcc00] to-[#ffb300]", onClick: () => setWindowsState((prev) => ({ ...prev, note: !windowsState.note })) }, // 3D Yellow
+        { src: "note.svg", alt: "Notes", color: "bg-gradient-to-b from-[#ffd54f] via-[#ffcc00] to-[#ffb300]", onClick: () => setWindowsState((prev) => ({ ...prev, note: !windowsState.note })) },
+        { src: "calculator.svg", alt: "calculator", color: "bg-gradient-to-b from-[#ffd54f] via-[#ffcc00] to-[#ffb300]", onClick: () => setWindowsState((prev) => ({ ...prev, note: !windowsState.note })) }, // 3D Yellow
     ];
 
     return (

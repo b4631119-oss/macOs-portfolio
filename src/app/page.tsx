@@ -22,9 +22,10 @@ const Page = () => {
 
   const [windowsState, setWindowsState] = useState({
     github: false,
-    note: false,
-    cli: false,
-    calender: false,
+  note: false,
+  cli: false,
+  calender: false,
+  calculator: false, 
   })
   return (
     <main
