@@ -75,4 +75,5 @@ export interface WindowsState {
   note: boolean;
   cli: boolean;
   calender: boolean;
+  calculator: boolean; // Добавили сюда!
 }
