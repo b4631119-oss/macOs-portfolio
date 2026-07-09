@@ -8,6 +8,7 @@ interface WindowsState {
   note: boolean;
   calender: boolean;
   calculator: boolean;
+  jerdesh: boolean;
 }
 
 interface DockProps {
@@ -23,6 +24,12 @@ const Dock = ({ setWindowsState, windowsState }: DockProps) => {
             color: "bg-gradient-to-b from-[#444d56] to-[#24292e]", 
             key: "github" as const
         }, 
+        { 
+            src: "jerdesh.png", // Закинь иконку/логотип в папку public/doc-icons/jerdesh.png
+            alt: "JERDESH-MOSCVA", 
+            color: "bg-gradient-to-b from-[#1e3a8a] to-[#0f172a]", // Красивый синий градиент
+            key: "jerdesh" as const
+        },
         { 
             src: "calender.svg", 
             alt: "Calendar", 

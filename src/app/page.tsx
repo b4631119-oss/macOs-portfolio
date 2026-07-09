@@ -24,6 +24,7 @@ const Page = () => {
     note: false,
     calender: false,
     calculator: false, 
+    jerdesh: false;
   });
 
   const handleContextMenu = (e: React.MouseEvent) => {

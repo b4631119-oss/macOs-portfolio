@@ -8,6 +8,7 @@ interface WindowsState {
   note: boolean;
   calender: boolean;
   calculator: boolean;
+  jerdesh: boolean;
 }
 
 interface WindowConfig {
