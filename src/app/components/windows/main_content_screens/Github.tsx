@@ -4,7 +4,7 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import MacWindow from '../MacWindow'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { MapPin, ExternalLink, Layers, Users, FolderGit2, Github as GithubIcon } from "lucide-react"
-import { projects, userDetails, WindowsState } from '@/lib/constatns' // Исправлена опечатка в импорте
+import { projects, userDetails, WindowsState } from '@/lib/constatns'
 
 interface GitHubUser {
     avatar_url: string;
@@ -41,15 +41,22 @@ const Github = ({ windowName, setWindowsState }: GithubProps) => {
                 setUser(data);
                 setLoading(false); 
             } catch (err: unknown) {
-                if (err instanceof Error) {
-                    if (err.name !== 'AbortError') {
-                        console.error("Error fetching data:", err.message);
-                        setLoading(false); 
-                    }
-                } else {
-                    console.error("An unexpected error occurred:", err);
-                    setLoading(false);
-                }
+                if (err instanceof Error && err.name === 'AbortError') return;
+
+                console.warn("GitHub API Error или лимит запросов. Подключаем локальный профиль.");
+                
+                // Безопасный фоллбэк: если API лежит, собираем данные из констант и локальных ссылок
+                setUser({
+                    avatar_url: `https://github.com/${userDetails.githubUsername}.png`,
+                    name: userDetails.githubUsername,
+                    html_url: `https://github.com/${userDetails.githubUsername}`,
+                    login: userDetails.githubUsername,
+                    followers: 0, 
+                    public_repos: projects.length,
+                    bio: "Frontend Developer",
+                    location: "Osh, Kyrgyzstan"
+                });
+                setLoading(false);
             }
         };
         
@@ -64,6 +71,7 @@ const Github = ({ windowName, setWindowsState }: GithubProps) => {
             y={100}
             width="60vw"
             height="65vh"
+            title="GitHub Portfolio"
             onClose={() => setWindowsState((prev) => ({ ...prev, [windowName]: false }))}
         >
             <div className="flex flex-col md:flex-row h-full w-full bg-[#09090b] text-zinc-100 overflow-hidden font-sans selection:bg-indigo-500/30 relative">
@@ -175,7 +183,6 @@ const Github = ({ windowName, setWindowsState }: GithubProps) => {
                                                             {project.title}
                                                         </h4>
                                                         <div className="flex gap-3 text-zinc-500 shrink-0">
-                                                            {/* Возвращены иконки гитхаба */}
                                                             <a href={project.github} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                                                                 <GithubIcon size={14} />
                                                             </a>

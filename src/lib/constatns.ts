@@ -30,12 +30,12 @@ export const wallpapersList = [
 
 // Кнопки управления окном (Закрыть, Свернуть, Развернуть)
 export const dots = [
-  { icon: "bg-red-500", fn: () => console.log("close") },
-  { icon: "bg-yellow-500", fn: () => console.log("minimize") },
-  { icon: "bg-green-500", fn: () => console.log("maximize") },
+  { type: "close", icon: "bg-red-500 hover:bg-red-600" },
+  { type: "minimize", icon: "bg-yellow-500 hover:bg-yellow-600" },
+  { type: "maximize", icon: "bg-green-500 hover:bg-green-600" },
 ];
 
-// ТВОИ РЕАЛЬНЫЕ ДАННЫЕ ДЛЯ ТЕРМИНАЛА И API ГИТХАБА
+
 export const userDetails = {
   name: "DevRoot",
   githubUsername: "b4631119-oss"
