@@ -5,7 +5,7 @@ export const wallpapersList = [
   {
     id: "sequoia",
     name: "Sequoia",
-    url: "/mac-wallpaper.jpg", // Убрали точки, в Next.js пути к public идут от корня "/"
+    url: "/mac-wallpaper.jpg", 
     thumbnail: "/mac-wallpaper.jpg",
   },
   {
@@ -28,7 +28,6 @@ export const wallpapersList = [
   },
 ];
 
-// Кнопки управления окном (Закрыть, Свернуть, Развернуть)
 export const dots = [
   { type: "close", icon: "bg-red-500 hover:bg-red-600" },
   { type: "minimize", icon: "bg-yellow-500 hover:bg-yellow-600" },
@@ -43,14 +42,7 @@ export const userDetails = {
 
 // ТВОИ РЕАЛЬНЫЕ ПРОЕКТЫ
 export const projects = [
-  {
-    title: "StarStream (Movie App)",
-    description: "Это учебный проект на React (Vite, Redux Toolkit, Tailwind CSS),",
-    tech: ["React", "Redux Toolkit", "Tailwind CSS", "Axios"],
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZwc21ZgWjx5K3V4uqyoQ4yPVG9n6PRwIoXWSbxuJmAw&s=10",
-    github: "https://github.com/b4631119-oss/movie-app.git",
-    live: "https://github.com/b4631119-oss/movie-app.git"
-  },
+  
   {
         title: "Real-Time Chat App",
         description: "Чат-приложение с авторизацией пользователей, кастомизацией профилей и комнатами для общения в реальном времени. Реализовано на базе Firebase Firestore и Next.js.",
