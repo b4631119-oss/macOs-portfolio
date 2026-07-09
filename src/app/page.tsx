@@ -13,6 +13,7 @@ import Github from "./components/windows/main_content_screens/Github";
 import Note from "./components/windows/main_content_screens/Note";
 import CalendarWindow from "./components/windows/main_content_screens/CalendarWindow"; 
 import CalculatorWindow from "./components/windows/main_content_screens/CalculatorWindow";
+import JerdeshWindowContent from "./components/other/jerdesh";
 
 const Page = () => {
   const [wallpaper, setWallpaper] = useState(wallpapersList[0].url);
@@ -24,7 +25,7 @@ const Page = () => {
     note: false,
     calender: false,
     calculator: false, 
-    jerdesh: false;
+    jerdesh: false // Исправлено: заменено ";" на ","
   });
 
   const handleContextMenu = (e: React.MouseEvent) => {
@@ -45,6 +46,14 @@ const Page = () => {
       width: 900,
       height: 650,
       component: <Github />
+    },
+    jerdesh: { // Полноценная конфигурация для Jerdesh
+      title: "JERDESH-MOSCVA — Маркетплейс",
+      x: 80,
+      y: 90,
+      width: 850,
+      height: 600,
+      component: <JerdeshWindowContent />
     },
     note: {
       title: "Notes",
