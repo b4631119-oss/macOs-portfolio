@@ -75,14 +75,27 @@ const MacWindow = ({
         const screenW = window.innerWidth;
         const screenH = window.innerHeight;
 
+        let currentNavHeight = 40;
+        const nav = document.querySelector('nav');
+        if (nav) {
+            const height = nav.getBoundingClientRect().height;
+            if (height > 0) {
+                currentNavHeight = height;
+                // Асинхронный пуш в стейт, чтобы не ломать первый рендер
+                requestAnimationFrame(() => {
+                    setNavHeight(height);
+                });
+            }
+        }
+
         let parsedW = typeof initialWidth === 'number' ? initialWidth : parseInt(String(initialWidth)) || 800;
         let parsedH = typeof initialHeight === 'number' ? initialHeight : parseInt(String(initialHeight)) || 600;
 
         if (parsedW > screenW - 20) {
             parsedW = Math.max(320, screenW - 20);
         }
-        if (parsedH > screenH - navHeight - 80) {
-            parsedH = Math.max(240, screenH - navHeight - 80);
+        if (parsedH > screenH - currentNavHeight - 80) {
+            parsedH = Math.max(240, screenH - currentNavHeight - 80);
         }
 
         let parsedX = initialX;
@@ -91,12 +104,12 @@ const MacWindow = ({
             parsedX = Math.max(10, screenW - parsedW - 10);
         }
         if (parsedY + parsedH > screenH - 70) {
-            parsedY = Math.max(navHeight + 10, screenH - 70 - parsedH - 10);
+            parsedY = Math.max(currentNavHeight + 10, screenH - 70 - parsedH - 10);
         }
 
         setSize({ width: parsedW, height: parsedH });
         setPosition({ x: parsedX, y: parsedY });
-    }, [initialWidth, initialHeight, initialX, initialY, navHeight]);
+    }, [initialWidth, initialHeight, initialX, initialY]);
 
     // Handle viewport resize
     useEffect(() => {
@@ -136,20 +149,6 @@ const MacWindow = ({
         }
     };
 
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Tab' && e.altKey) {
-                e.preventDefault();
-                if (onFocus && isVisible && windowId) {
-                    onFocus(windowId);
-                }
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [onFocus, isVisible, windowId]);
-
     const handleMaximize = () => {
         if (disableMaximize) return;
 
@@ -185,7 +184,7 @@ const MacWindow = ({
         }
     };
 
-    // 1. ДИНАМИЧЕСКИЙ РАСЧЕТ И ОТОБРАЖЕНИЕ ПРЕВЬЮ ПРИ ТАСКАНИИ ОКНА (Строгие типы без any)
+    // 1. ДИНАМИЧЕСКИЙ РАСЧЕТ И ОТОБРАЖЕНИЕ ПРЕВЬЮ ПРИ ТАСКАНИИ ОКНА
     const handleDrag = (_e: MouseEvent | TouchEvent, d: DraggableData) => {
         if (isMaximized) return;
 
@@ -212,7 +211,7 @@ const MacWindow = ({
         }
     };
 
-    // 2. ФИКСАЦИЯ ПРИЛИПАНИЯ ПРИ ОТПУСКАНИИ МЫШКИ (Строгие типы без any)
+    // 2. ФИКСАЦИЯ ПРИЛИПАНИЯ ПРИ ОТПУСКАНИИ МЫШКИ
     const handleDragStop = (_e: MouseEvent | TouchEvent, d: DraggableData) => {
         if (isMaximized) return;
 
@@ -221,7 +220,6 @@ const MacWindow = ({
         const mouseX = d.x;
         const mouseY = d.y;
 
-        // Если было активно превью — приклеиваем окно по его размерам
         if (mouseY <= navHeight + 5 && !disableMaximize) {
             setSavedState({ x: position.x, y: position.y, width: size.width, height: size.height });
             setPosition({ x: 0, y: navHeight });
@@ -241,11 +239,9 @@ const MacWindow = ({
             setIsMaximized(true);
         } 
         else {
-            // Обычное сохранение координат, если никуда не прилипло
             setPosition({ x: d.x, y: d.y });
         }
 
-        // В любом случае очищаем оверлей превью
         setSnapPreview(null);
     };
 
@@ -253,7 +249,6 @@ const MacWindow = ({
 
     return (
         <>
-            {/* ВИЗУАЛЬНЫЙ ЭФФЕКТ ПРИЛИПАНИЯ (Сетка-подсказка) */}
             <AnimatePresence>
                 {snapPreview && (
                     <motion.div
@@ -313,7 +308,10 @@ const MacWindow = ({
                     className={`w-full h-full bg-[#1a1a1a] rounded-xl border ${isFocused ? 'border-[#3a3a3a]' : 'border-[#2a2a2a]'} shadow-2xl flex flex-col overflow-hidden transition-all duration-200`}
                     onClick={handleWindowClick}
                 >
-                    <div className="window-nav-handle flex items-center justify-between px-4 py-2.5 border-b border-[#2a2a2a] bg-[#1e1e1e] cursor-move">
+                    <div
+                        className="window-nav-handle flex items-center justify-between px-4 py-2.5 border-b border-[#2a2a2a] bg-[#1e1e1e] cursor-move"
+                        onDoubleClick={() => !disableMaximize && handleMaximize()}
+                    >
                         <div className="flex items-center gap-2">
                             {dots.map((dot, index) => {
                                 const isDisabled = dot.type === 'maximize' && disableMaximize;
@@ -325,7 +323,10 @@ const MacWindow = ({
                                                 ? 'bg-zinc-600/50 cursor-not-allowed opacity-55' 
                                                 : `${dot.icon} hover:scale-110 active:scale-95`
                                         }`}
-                                        onClick={() => handleDotClick(dot.type)}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDotClick(dot.type);
+                                        }}
                                         aria-label={dot.type}
                                         disabled={isDisabled}
                                     />
