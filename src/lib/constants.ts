@@ -66,10 +66,11 @@ export const projects = [
         github: "https://github.com/b4631119-oss/cuaderno",
         live: "https://cuaderno-nine.vercel.app"
     },
-];
+]
 export interface WindowsState {
   github: boolean;
   note: boolean;
   calender: boolean;
   calculator: boolean;
+  jerdesh:boolean;
 }
