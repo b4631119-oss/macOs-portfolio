@@ -35,25 +35,25 @@ const WindowManager = ({ windowsState, onClose, windowConfigs }: WindowManagerPr
       .map(([id]) => id);
   }, [windowsState]);
 
-  // Сбрасываем фокус если окно закрыто
-  useEffect(() => {
-    if (focusedWindow && !activeWindows.includes(focusedWindow)) {
-      setFocusedWindow(null);
-    }
-  }, [activeWindows, focusedWindow]);
+  // ХАК ДЛЯ REACT 19: Сбрасываем фокус прямо во время рендера, если окно закрылось.
+  // Это заменяет ломающийся useEffect и предотвращает cascading renders.
+  const currentFocused = focusedWindow && activeWindows.includes(focusedWindow) ? focusedWindow : null;
+  if (focusedWindow !== currentFocused) {
+    setFocusedWindow(currentFocused);
+  }
 
   const handleFocus = (id: string) => {
     setFocusedWindow(id);
   };
 
   // Alt+Tab
-  React.useEffect(() => {
+  useEffect(() => {
     const handleAltTab = (e: KeyboardEvent) => {
       if (e.key === 'Tab' && e.altKey) {
         e.preventDefault();
         if (activeWindows.length === 0) return;
 
-        const currentIndex = activeWindows.indexOf(focusedWindow || '');
+        const currentIndex = activeWindows.indexOf(currentFocused || '');
         const nextIndex = (currentIndex + 1) % activeWindows.length;
         const nextWindow = activeWindows[nextIndex];
         
@@ -65,7 +65,7 @@ const WindowManager = ({ windowsState, onClose, windowConfigs }: WindowManagerPr
 
     window.addEventListener('keydown', handleAltTab);
     return () => window.removeEventListener('keydown', handleAltTab);
-  }, [focusedWindow, activeWindows]);
+  }, [currentFocused, activeWindows]);
 
   // Рендерим окна
   const renderWindows = () => {
@@ -75,7 +75,7 @@ const WindowManager = ({ windowsState, onClose, windowConfigs }: WindowManagerPr
       const config = windowConfigs[id as keyof WindowsState];
       if (!config) return;
 
-      const isFocused = focusedWindow === id;
+      const isFocused = currentFocused === id;
       const zIndex = 40 + index * 5;
 
       windows.push(
