@@ -47,7 +47,7 @@ export const projects = [
         description: "Веб-приложение для поиска жилья, работы и попутчиков в Москве. Разработано специально для удобного взаимодействия пользователей, быстрой подачи объявлений и фильтрации.",
         tech: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
         image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0LiEFoPzlspZQ8J2nISb38csNrQTHwDi5JqWdZdxCSw&s", 
-        github: "https://github.com/b4631119-oss/jerdesh-moscva",
+        github: "https://github.com/b4631119-oss/JERDESH-MOSCVA",
         live: "https://jerdesh-moscva.vercel.app/"
     },
     {
