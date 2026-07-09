@@ -229,3 +229,33 @@
     @apply bg-background text-foreground;
   }
 }
+/* Зона-триггер у самого нижнего края экрана. 
+   Появляется только когда какое-то окно развёрнуто на максимум */
+.dock-trigger-zone {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  z-index: 9998;
+}
+
+/* Если окно развёрнуто — активируем триггер-зону */
+html.window-maximized .dock-trigger-zone {
+  display: block;
+}
+
+/* Плавное скрытие Дока, когда окно развёрнуто */
+html.window-maximized .dock-container {
+  transform: translateX(-50%) translateY(110%);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+}
+
+/* Появление Дока: если мы навели либо на скрытую зону, либо на сам выползающий Док */
+html.window-maximized .dock-trigger-zone:hover + .dock-container,
+html.window-maximized .dock-container:hover {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}

@@ -29,15 +29,12 @@ interface WindowManagerProps {
 const WindowManager = ({ windowsState, onClose, windowConfigs }: WindowManagerProps) => {
   const [focusedWindow, setFocusedWindow] = useState<string | null>(null);
   
-  // Получаем список активных окон
   const activeWindows = useMemo(() => {
     return Object.entries(windowsState)
       .filter(([_, isOpen]) => isOpen)
       .map(([id]) => id);
   }, [windowsState]);
 
-  // ХАК ДЛЯ REACT 19: Сбрасываем фокус прямо во время рендера, если окно закрылось.
-  // Это заменяет ломающийся useEffect и предотвращает cascading renders.
   const currentFocused = focusedWindow && activeWindows.includes(focusedWindow) ? focusedWindow : null;
   if (focusedWindow !== currentFocused) {
     setFocusedWindow(currentFocused);

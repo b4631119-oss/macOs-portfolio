@@ -46,10 +46,20 @@ const MacWindow = ({
     const isFocused = controlledIsFocused !== undefined ? controlledIsFocused : localIsFocused;
     
     const [navHeight, setNavHeight] = useState(40);
-    const [dockHeight, setDockHeight] = useState(60);
 
     const windowRef = useRef<HTMLDivElement>(null);
     const clampedInitialized = useRef(false);
+
+    // Синхронизация состояния максимизации с тегом HTML для управления стилями Дока
+    useEffect(() => {
+        const html = document.documentElement;
+        if (isMaximized) {
+            html.classList.add('window-maximized');
+        } else {
+            html.classList.remove('window-maximized');
+        }
+        return () => html.classList.remove('window-maximized');
+    }, [isMaximized]);
 
     // Initial clamp on mount to fit within smaller viewports
     useEffect(() => {
@@ -65,8 +75,8 @@ const MacWindow = ({
         if (parsedW > screenW - 20) {
             parsedW = Math.max(320, screenW - 20);
         }
-        if (parsedH > screenH - navHeight - dockHeight - 20) {
-            parsedH = Math.max(240, screenH - navHeight - dockHeight - 20);
+        if (parsedH > screenH - navHeight - 80) {
+            parsedH = Math.max(240, screenH - navHeight - 80);
         }
 
         let parsedX = initialX;
@@ -74,15 +84,15 @@ const MacWindow = ({
         if (parsedX + parsedW > screenW) {
             parsedX = Math.max(10, screenW - parsedW - 10);
         }
-        if (parsedY + parsedH > screenH - dockHeight) {
-            parsedY = Math.max(navHeight + 10, screenH - dockHeight - parsedH - 10);
+        if (parsedY + parsedH > screenH - 70) {
+            parsedY = Math.max(navHeight + 10, screenH - 70 - parsedH - 10);
         }
 
         setSize({ width: parsedW, height: parsedH });
         setPosition({ x: parsedX, y: parsedY });
-    }, [initialWidth, initialHeight, initialX, initialY, navHeight, dockHeight]);
+    }, [initialWidth, initialHeight, initialX, initialY, navHeight]);
 
-    // Handle height calculations and maximize scaling on viewport resize
+    // Handle viewport resize: теперь на весь экран (Минус только Navbar)
     useEffect(() => {
         const updateHeightsAndMaximize = () => {
             let currentNavHeight = 40;
@@ -95,21 +105,11 @@ const MacWindow = ({
                 }
             }
 
-            let currentDockHeight = 60;
-            const dock = document.querySelector('footer');
-            if (dock) {
-                const height = dock.getBoundingClientRect().height;
-                if (height > 0) {
-                    setDockHeight(height + 12);
-                    currentDockHeight = height + 12;
-                }
-            }
-
             if (isMaximized) {
                 setPosition({ x: 0, y: currentNavHeight });
                 setSize({
                     width: window.innerWidth,
-                    height: window.innerHeight - currentNavHeight - currentDockHeight
+                    height: window.innerHeight - currentNavHeight // Убрали вычет dockHeight!
                 });
             }
         };
@@ -157,7 +157,7 @@ const MacWindow = ({
             setPosition({ x: 0, y: navHeight });
             setSize({
                 width: window.innerWidth,
-                height: window.innerHeight - navHeight - dockHeight
+                height: window.innerHeight - navHeight // Окно уходит до самого низа
             });
         } else if (savedState) {
             setPosition({ x: savedState.x, y: savedState.y });

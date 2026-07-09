@@ -51,33 +51,37 @@ const Dock = ({ setWindowsState, windowsState }: DockProps) => {
     };
 
     return (
-        <footer className="dock-container z-50">
-            {icons.map((icon, index) => (
-                <div 
-                    key={index} 
-                    onClick={() => handleIconClick(icon.key)}
-                    className="relative"
-                >
-                    <Tooltip delayDuration={100}>
-                        <TooltipTrigger asChild>
-                            <div className={`dock-icons ${icon.color}`}>
-                                <img
-                                    src={`./doc-icons/${icon.src}`}
-                                    alt={icon.alt}
-                                />
-                                {/* Indicator for active window */}
-                                {windowsState[icon.key] && (
-                                    <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-white rounded-full z-20 shadow-md" />
-                                )}
-                            </div>
-                        </TooltipTrigger>
-                        <TooltipContent className="bg-gray-800/90 backdrop-blur-md border border-gray-700">
-                            <p className="text-sm text-gray-200">{icon.alt}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </div>
-            ))}
-        </footer>
+        <>
+            {/* Невидимая плашка у нижнего края экрана для вызова скрытого Дока */}
+            <div className="dock-trigger-zone" />
+            
+            <footer className="dock-container z-50">
+                {icons.map((icon, index) => (
+                    <div 
+                        key={index} 
+                        onClick={() => handleIconClick(icon.key)}
+                        className="relative"
+                    >
+                        <Tooltip delayDuration={100}>
+                            <TooltipTrigger asChild>
+                                <div className={`dock-icons ${icon.color}`}>
+                                    <img
+                                        src={`./doc-icons/${icon.src}`}
+                                        alt={icon.alt}
+                                    />
+                                    {windowsState[icon.key] && (
+                                        <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-white rounded-full z-20 shadow-md" />
+                                    )}
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-gray-800/90 backdrop-blur-md border border-gray-700">
+                                <p className="text-sm text-gray-200">{icon.alt}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
+                ))}
+            </footer>
+        </>
     )
 }
 
