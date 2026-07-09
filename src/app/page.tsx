@@ -53,14 +53,6 @@ const Page = () => {
       height: 500,
       component: <Note windowName="note" setWindowsState={setWindowsState} />
     },
-    cli: {
-      title: "Terminal",
-      x: 150,
-      y: 120,
-      width: 750,
-      height: 450,
-      component: <Cli windowName="cli" setWindowsState={setWindowsState} />
-    },
     calender: {
       title: "Calendar",
       x: 200,

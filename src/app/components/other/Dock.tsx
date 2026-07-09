@@ -4,7 +4,6 @@ import { Dispatch, SetStateAction } from "react";
 interface WindowsState {
   github: boolean;
   note: boolean;
-  cli: boolean;
   calender: boolean;
   calculator: boolean;
 }
@@ -27,13 +26,7 @@ const Dock = ({ setWindowsState, windowsState }: DockProps) => {
             alt: "Calendar", 
             color: "bg-gradient-to-b from-[#7A83FF] to-[#5856D6]", 
             key: "calender" as const
-        }, 
-        { 
-            src: "cli.svg", 
-            alt: "Terminal", 
-            color: "bg-gradient-to-b from-[#757575] to-[#4d4d4d]", 
-            key: "cli" as const
-        }, 
+        },
         { 
             src: "note.svg", 
             alt: "Notes", 
