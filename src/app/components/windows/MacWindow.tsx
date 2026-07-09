@@ -16,9 +16,10 @@ interface MacWindowProps {
     onMinimize?: () => void;
     zIndex?: number;
     isVisible?: boolean;
-    windowId?: string; // Сделал опциональным
+    windowId?: string;
     onFocus?: (id: string) => void;
-    isFocused?: boolean; // Добавили управляемый фокус
+    isFocused?: boolean;
+    disableMaximize?: boolean;
 }
 
 const MacWindow = ({ 
@@ -32,9 +33,10 @@ const MacWindow = ({
     onMinimize,
     zIndex = 40,
     isVisible = true,
-    windowId = 'default', // Значение по умолчанию
+    windowId = 'default',
     onFocus,
-    isFocused: controlledIsFocused
+    isFocused: controlledIsFocused,
+    disableMaximize = false
 }: MacWindowProps) => {
     const [isMaximized, setIsMaximized] = useState(false);
     const [position, setPosition] = useState({ x: initialX, y: initialY });
@@ -47,34 +49,79 @@ const MacWindow = ({
     const [dockHeight, setDockHeight] = useState(60);
 
     const windowRef = useRef<HTMLDivElement>(null);
+    const clampedInitialized = useRef(false);
 
+    // Initial clamp on mount to fit within smaller viewports
     useEffect(() => {
-        const updateHeights = () => {
+        if (clampedInitialized.current) return;
+        clampedInitialized.current = true;
+
+        const screenW = window.innerWidth;
+        const screenH = window.innerHeight;
+
+        let parsedW = typeof initialWidth === 'number' ? initialWidth : parseInt(String(initialWidth)) || 800;
+        let parsedH = typeof initialHeight === 'number' ? initialHeight : parseInt(String(initialHeight)) || 600;
+
+        if (parsedW > screenW - 20) {
+            parsedW = Math.max(320, screenW - 20);
+        }
+        if (parsedH > screenH - navHeight - dockHeight - 20) {
+            parsedH = Math.max(240, screenH - navHeight - dockHeight - 20);
+        }
+
+        let parsedX = initialX;
+        let parsedY = initialY;
+        if (parsedX + parsedW > screenW) {
+            parsedX = Math.max(10, screenW - parsedW - 10);
+        }
+        if (parsedY + parsedH > screenH - dockHeight) {
+            parsedY = Math.max(navHeight + 10, screenH - dockHeight - parsedH - 10);
+        }
+
+        setSize({ width: parsedW, height: parsedH });
+        setPosition({ x: parsedX, y: parsedY });
+    }, [initialWidth, initialHeight, initialX, initialY, navHeight, dockHeight]);
+
+    // Handle height calculations and maximize scaling on viewport resize
+    useEffect(() => {
+        const updateHeightsAndMaximize = () => {
+            let currentNavHeight = 40;
             const nav = document.querySelector('nav');
             if (nav) {
                 const height = nav.getBoundingClientRect().height;
                 if (height > 0) {
                     setNavHeight(height);
+                    currentNavHeight = height;
                 }
             }
 
+            let currentDockHeight = 60;
             const dock = document.querySelector('footer');
             if (dock) {
                 const height = dock.getBoundingClientRect().height;
                 if (height > 0) {
                     setDockHeight(height + 12);
+                    currentDockHeight = height + 12;
                 }
+            }
+
+            if (isMaximized) {
+                setPosition({ x: 0, y: currentNavHeight });
+                setSize({
+                    width: window.innerWidth,
+                    height: window.innerHeight - currentNavHeight - currentDockHeight
+                });
             }
         };
 
-        const timer = setTimeout(updateHeights, 100);
-        window.addEventListener('resize', updateHeights);
+        const timer = setTimeout(updateHeightsAndMaximize, 100);
+        window.addEventListener('resize', updateHeightsAndMaximize);
         
         return () => {
             clearTimeout(timer);
-            window.removeEventListener('resize', updateHeights);
+            window.removeEventListener('resize', updateHeightsAndMaximize);
         };
-    }, []);
+    }, [isMaximized]);
 
     const handleWindowClick = () => {
         setLocalIsFocused(true);
@@ -98,12 +145,19 @@ const MacWindow = ({
     }, [onFocus, isVisible, windowId]);
 
     const handleMaximize = () => {
+        if (disableMaximize) return;
+
         if (!isMaximized) {
             setSavedState({
                 x: position.x,
                 y: position.y,
                 width: size.width,
                 height: size.height
+            });
+            setPosition({ x: 0, y: navHeight });
+            setSize({
+                width: window.innerWidth,
+                height: window.innerHeight - navHeight - dockHeight
             });
         } else if (savedState) {
             setPosition({ x: savedState.x, y: savedState.y });
@@ -120,37 +174,17 @@ const MacWindow = ({
         if (type === 'minimize' && onMinimize) {
             onMinimize();
         }
-        if (type === 'maximize') {
+        if (type === 'maximize' && !disableMaximize) {
             handleMaximize();
         }
-    };
-
-    const getWindowSize = () => {
-        if (isMaximized) {
-            return {
-                width: '100vw',
-                height: `calc(100vh - ${navHeight}px - ${dockHeight}px)`
-            };
-        }
-        return {
-            width: size.width,
-            height: size.height
-        };
-    };
-
-    const getWindowPosition = () => {
-        if (isMaximized) {
-            return { x: 0, y: navHeight };
-        }
-        return { x: position.x, y: position.y };
     };
 
     if (!isVisible) return null;
 
     return (
         <Rnd
-            size={getWindowSize()}
-            position={getWindowPosition()}
+            size={{ width: size.width, height: size.height }}
+            position={{ x: position.x, y: position.y }}
             onDragStop={(_e, d) => {
                 if (!isMaximized) {
                     setPosition({ x: d.x, y: d.y });
@@ -192,14 +226,22 @@ const MacWindow = ({
             >
                 <div className="window-nav-handle flex items-center justify-between px-4 py-2.5 border-b border-[#2a2a2a] bg-[#1e1e1e] cursor-move">
                     <div className="flex items-center gap-2">
-                        {dots.map((dot, index) => (
-                            <button
-                                key={index}
-                                className={`w-3.5 h-3.5 ${dot.icon} rounded-full transition-all duration-150 hover:scale-110 active:scale-95 focus:outline-none`}
-                                onClick={() => handleDotClick(dot.type)}
-                                aria-label={dot.type}
-                            />
-                        ))}
+                        {dots.map((dot, index) => {
+                            const isDisabled = dot.type === 'maximize' && disableMaximize;
+                            return (
+                                <button
+                                    key={index}
+                                    className={`w-3.5 h-3.5 rounded-full transition-all duration-150 focus:outline-none ${
+                                        isDisabled 
+                                            ? 'bg-zinc-600/50 cursor-not-allowed opacity-55' 
+                                            : `${dot.icon} hover:scale-110 active:scale-95`
+                                    }`}
+                                    onClick={() => handleDotClick(dot.type)}
+                                    aria-label={dot.type}
+                                    disabled={isDisabled}
+                                />
+                            );
+                        })}
                     </div>
                     
                     <div className="pointer-events-none px-2">

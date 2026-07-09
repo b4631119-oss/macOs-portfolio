@@ -67,6 +67,7 @@ const Page = () => {
       y: 110,
       width: 400,
       height: 550,
+      disableMaximize: true,
       component: <CalculatorWindow />
     }
   };

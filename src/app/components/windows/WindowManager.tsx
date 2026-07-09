@@ -17,6 +17,7 @@ interface WindowConfig {
   width: number;
   height: number;
   component: React.ReactNode;
+  disableMaximize?: boolean;
 }
 
 interface WindowManagerProps {
@@ -92,6 +93,7 @@ const WindowManager = ({ windowsState, onClose, windowConfigs }: WindowManagerPr
           onFocus={handleFocus}
           isFocused={isFocused}
           zIndex={isFocused ? zIndex + 10 : zIndex}
+          disableMaximize={config.disableMaximize}
         >
           {config.component}
         </MacWindow>
