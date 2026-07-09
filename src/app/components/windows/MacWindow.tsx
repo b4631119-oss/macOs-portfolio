@@ -2,8 +2,8 @@
 
 import { dots, userDetails } from '@/lib/constants';
 import React, { useState, useEffect, useRef } from 'react'
-import { Rnd } from 'react-rnd'
-import { motion } from 'framer-motion';
+import { Rnd, DraggableData } from 'react-rnd'
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface MacWindowProps {
     children: React.ReactNode;
@@ -47,8 +47,14 @@ const MacWindow = ({
     
     const [navHeight, setNavHeight] = useState(40);
 
+    // СОСТОЯНИЕ ДЛЯ МАГНИТНОГО ПРЕВЬЮ (Оверлей подсказки)
+    const [snapPreview, setSnapPreview] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
+
     const windowRef = useRef<HTMLDivElement>(null);
     const clampedInitialized = useRef(false);
+
+    // Чувствительность магнитных зон (в пикселях от краев экрана)
+    const SNAP_THRESHOLD = 30;
 
     // Синхронизация состояния максимизации с тегом HTML для управления стилями Дока
     useEffect(() => {
@@ -92,7 +98,7 @@ const MacWindow = ({
         setPosition({ x: parsedX, y: parsedY });
     }, [initialWidth, initialHeight, initialX, initialY, navHeight]);
 
-    // Handle viewport resize: теперь на весь экран (Минус только Navbar)
+    // Handle viewport resize
     useEffect(() => {
         const updateHeightsAndMaximize = () => {
             let currentNavHeight = 40;
@@ -109,7 +115,7 @@ const MacWindow = ({
                 setPosition({ x: 0, y: currentNavHeight });
                 setSize({
                     width: window.innerWidth,
-                    height: window.innerHeight - currentNavHeight // Убрали вычет dockHeight!
+                    height: window.innerHeight - currentNavHeight
                 });
             }
         };
@@ -157,7 +163,7 @@ const MacWindow = ({
             setPosition({ x: 0, y: navHeight });
             setSize({
                 width: window.innerWidth,
-                height: window.innerHeight - navHeight // Окно уходит до самого низа
+                height: window.innerHeight - navHeight
             });
         } else if (savedState) {
             setPosition({ x: savedState.x, y: savedState.y });
@@ -179,85 +185,169 @@ const MacWindow = ({
         }
     };
 
+    // 1. ДИНАМИЧЕСКИЙ РАСЧЕТ И ОТОБРАЖЕНИЕ ПРЕВЬЮ ПРИ ТАСКАНИИ ОКНА (Строгие типы без any)
+    const handleDrag = (_e: MouseEvent | TouchEvent, d: DraggableData) => {
+        if (isMaximized) return;
+
+        const screenW = window.innerWidth;
+        const screenH = window.innerHeight;
+        const mouseX = d.x;
+        const mouseY = d.y;
+
+        // Зона Максимизации (Вверху)
+        if (mouseY <= navHeight + 5) {
+            setSnapPreview({ x: 0, y: navHeight, width: screenW, height: screenH - navHeight });
+        } 
+        // Левый край
+        else if (mouseX <= SNAP_THRESHOLD) {
+            setSnapPreview({ x: 0, y: navHeight, width: screenW / 2, height: screenH - navHeight });
+        } 
+        // Правый край
+        else if (mouseX + (typeof size.width === 'number' ? size.width : parseInt(String(size.width))) >= screenW - SNAP_THRESHOLD) {
+            setSnapPreview({ x: screenW / 2, y: navHeight, width: screenW / 2, height: screenH - navHeight });
+        } 
+        // Окно в безопасной зоне — убираем подсказку
+        else {
+            setSnapPreview(null);
+        }
+    };
+
+    // 2. ФИКСАЦИЯ ПРИЛИПАНИЯ ПРИ ОТПУСКАНИИ МЫШКИ (Строгие типы без any)
+    const handleDragStop = (_e: MouseEvent | TouchEvent, d: DraggableData) => {
+        if (isMaximized) return;
+
+        const screenW = window.innerWidth;
+        const screenH = window.innerHeight;
+        const mouseX = d.x;
+        const mouseY = d.y;
+
+        // Если было активно превью — приклеиваем окно по его размерам
+        if (mouseY <= navHeight + 5 && !disableMaximize) {
+            setSavedState({ x: position.x, y: position.y, width: size.width, height: size.height });
+            setPosition({ x: 0, y: navHeight });
+            setSize({ width: screenW, height: screenH - navHeight });
+            setIsMaximized(true);
+        } 
+        else if (mouseX <= SNAP_THRESHOLD) {
+            setSavedState({ x: position.x, y: position.y, width: size.width, height: size.height });
+            setPosition({ x: 0, y: navHeight });
+            setSize({ width: screenW / 2, height: screenH - navHeight });
+            setIsMaximized(true);
+        } 
+        else if (mouseX + (typeof size.width === 'number' ? size.width : parseInt(String(size.width))) >= screenW - SNAP_THRESHOLD) {
+            setSavedState({ x: position.x, y: position.y, width: size.width, height: size.height });
+            setPosition({ x: screenW / 2, y: navHeight });
+            setSize({ width: screenW / 2, height: screenH - navHeight });
+            setIsMaximized(true);
+        } 
+        else {
+            // Обычное сохранение координат, если никуда не прилипло
+            setPosition({ x: d.x, y: d.y });
+        }
+
+        // В любом случае очищаем оверлей превью
+        setSnapPreview(null);
+    };
+
     if (!isVisible) return null;
 
     return (
-        <Rnd
-            size={{ width: size.width, height: size.height }}
-            position={{ x: position.x, y: position.y }}
-            onDragStop={(_e, d) => {
-                if (!isMaximized) {
-                    setPosition({ x: d.x, y: d.y });
-                }
-            }}
-            onResizeStop={(_e, _direction, ref, _delta, pos) => {
-                if (!isMaximized) {
-                    setSize({ width: ref.style.width, height: ref.style.height });
-                    setPosition(pos);
-                }
-            }}
-            onDragStart={handleWindowClick}
-            disableDragging={isMaximized}
-            enableResizing={!isMaximized}
-            minWidth={320}
-            minHeight={240}
-            dragHandleClassName="window-nav-handle"
-            style={{ 
-                zIndex: isFocused ? zIndex + 10 : zIndex,
-                boxShadow: isFocused 
-                    ? '0 25px 50px -12px rgba(0, 0, 0, 0.8)' 
-                    : '0 10px 30px -10px rgba(0, 0, 0, 0.5)'
-            }}
-            bounds="window"
-        >
-            <motion.div
-                ref={windowRef}
-                initial={{ scale: 0.92, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.92, opacity: 0 }}
-                transition={{ 
-                    type: "spring", 
-                    stiffness: 350, 
-                    damping: 25,
-                    mass: 0.8
+        <>
+            {/* ВИЗУАЛЬНЫЙ ЭФФЕКТ ПРИЛИПАНИЯ (Сетка-подсказка) */}
+            <AnimatePresence>
+                {snapPreview && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                        style={{
+                            position: 'fixed',
+                            left: snapPreview.x,
+                            top: snapPreview.y,
+                            width: snapPreview.width,
+                            height: snapPreview.height,
+                            zIndex: 30,
+                        }}
+                        className="bg-blue-500/15 border-2 border-blue-500/40 rounded-xl pointer-events-none backdrop-blur-[2px]"
+                    />
+                )}
+            </AnimatePresence>
+
+            <Rnd
+                size={{ width: size.width, height: size.height }}
+                position={{ x: position.x, y: position.y }}
+                onDrag={handleDrag} 
+                onDragStop={handleDragStop} 
+                onResizeStop={(_e, _direction, ref, _delta, pos) => {
+                    if (!isMaximized) {
+                        setSize({ width: ref.style.width, height: ref.style.height });
+                        setPosition(pos);
+                    }
                 }}
-                className={`w-full h-full bg-[#1a1a1a] rounded-xl border ${isFocused ? 'border-[#3a3a3a]' : 'border-[#2a2a2a]'} shadow-2xl flex flex-col overflow-hidden transition-all duration-200`}
-                onClick={handleWindowClick}
+                onDragStart={handleWindowClick}
+                disableDragging={isMaximized}
+                enableResizing={!isMaximized}
+                minWidth={320}
+                minHeight={240}
+                dragHandleClassName="window-nav-handle"
+                style={{ 
+                    zIndex: isFocused ? zIndex + 10 : zIndex,
+                    boxShadow: isFocused 
+                        ? '0 25px 50px -12px rgba(0, 0, 0, 0.8)' 
+                        : '0 10px 30px -10px rgba(0, 0, 0, 0.5)'
+                }}
+                bounds="window"
             >
-                <div className="window-nav-handle flex items-center justify-between px-4 py-2.5 border-b border-[#2a2a2a] bg-[#1e1e1e] cursor-move">
-                    <div className="flex items-center gap-2">
-                        {dots.map((dot, index) => {
-                            const isDisabled = dot.type === 'maximize' && disableMaximize;
-                            return (
-                                <button
-                                    key={index}
-                                    className={`w-3.5 h-3.5 rounded-full transition-all duration-150 focus:outline-none ${
-                                        isDisabled 
-                                            ? 'bg-zinc-600/50 cursor-not-allowed opacity-55' 
-                                            : `${dot.icon} hover:scale-110 active:scale-95`
-                                    }`}
-                                    onClick={() => handleDotClick(dot.type)}
-                                    aria-label={dot.type}
-                                    disabled={isDisabled}
-                                />
-                            );
-                        })}
-                    </div>
-                    
-                    <div className="pointer-events-none px-2">
-                        <p className={`text-xs font-medium select-none ${isFocused ? 'text-gray-300' : 'text-gray-500'}`}>
-                            {title || `${userDetails.name} ~zsh`}
-                        </p>
+                <motion.div
+                    ref={windowRef}
+                    initial={{ scale: 0.92, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.92, opacity: 0 }}
+                    transition={{ 
+                        type: "spring", 
+                        stiffness: 350, 
+                        damping: 25,
+                        mass: 0.8
+                    }}
+                    className={`w-full h-full bg-[#1a1a1a] rounded-xl border ${isFocused ? 'border-[#3a3a3a]' : 'border-[#2a2a2a]'} shadow-2xl flex flex-col overflow-hidden transition-all duration-200`}
+                    onClick={handleWindowClick}
+                >
+                    <div className="window-nav-handle flex items-center justify-between px-4 py-2.5 border-b border-[#2a2a2a] bg-[#1e1e1e] cursor-move">
+                        <div className="flex items-center gap-2">
+                            {dots.map((dot, index) => {
+                                const isDisabled = dot.type === 'maximize' && disableMaximize;
+                                return (
+                                    <button
+                                        key={index}
+                                        className={`w-3.5 h-3.5 rounded-full transition-all duration-150 focus:outline-none ${
+                                            isDisabled 
+                                                ? 'bg-zinc-600/50 cursor-not-allowed opacity-55' 
+                                                : `${dot.icon} hover:scale-110 active:scale-95`
+                                        }`}
+                                        onClick={() => handleDotClick(dot.type)}
+                                        aria-label={dot.type}
+                                        disabled={isDisabled}
+                                    />
+                                );
+                            })}
+                        </div>
+                        
+                        <div className="pointer-events-none px-2">
+                            <p className={`text-xs font-medium select-none ${isFocused ? 'text-gray-300' : 'text-gray-500'}`}>
+                                {title || `${userDetails.name} ~zsh`}
+                            </p>
+                        </div>
+
+                        <div className="w-[52px]" />
                     </div>
 
-                    <div className="w-[52px]" />
-                </div>
-
-                <div className={`flex-1 overflow-auto ${isFocused ? 'bg-[#0d0d0d]' : 'bg-[#0a0a0a]'}`}>
-                    {children}
-                </div>
-            </motion.div>
-        </Rnd>
+                    <div className={`flex-1 overflow-auto ${isFocused ? 'bg-[#0d0d0d]' : 'bg-[#0a0a0a]'}`}>
+                        {children}
+                    </div>
+                </motion.div>
+            </Rnd>
+        </>
     )
 }
 
