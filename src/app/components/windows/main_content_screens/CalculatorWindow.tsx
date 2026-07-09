@@ -7,9 +7,10 @@ import { WindowsState } from '@/lib/constatns'
 interface CalculatorProps {
     windowName: keyof WindowsState;
     setWindowsState: Dispatch<SetStateAction<WindowsState>>;
+    onClose?: () => void; // Добавляем
 }
 
-const CalculatorWindow = ({ windowName, setWindowsState }: CalculatorProps) => {
+const CalculatorWindow = ({ windowName, setWindowsState, onClose }: CalculatorProps) => {
     const [display, setDisplay] = useState('0')
     const [prevValue, setPrevValue] = useState<number | null>(null)
     const [operation, setOperation] = useState<string | null>(null)
@@ -86,6 +87,15 @@ const CalculatorWindow = ({ windowName, setWindowsState }: CalculatorProps) => {
         }
     }
 
+    // Функция закрытия
+    const handleClose = () => {
+        if (onClose) {
+            onClose();
+        } else {
+            setWindowsState((prev) => ({ ...prev, [windowName]: false }));
+        }
+    };
+
     const buttons = [
         { label: 'C', bg: 'bg-zinc-400 text-black hover:bg-zinc-300', action: clearAll },
         { label: '±', bg: 'bg-zinc-400 text-black hover:bg-zinc-300', action: toggleSign },
@@ -112,18 +122,16 @@ const CalculatorWindow = ({ windowName, setWindowsState }: CalculatorProps) => {
         <MacWindow
             x={300}
             y={150}
-            width="260px" // Маленькое фиксированное окно как на MacOS
+            width="260px"
             height="420px"
             title="Калькулятор"
-            onClose={() => setWindowsState((prev) => ({ ...prev, [windowName]: false }))}
+            onClose={handleClose} // Используем новую функцию
         >
             <div className="w-full h-full bg-zinc-900 p-3 flex flex-col justify-end select-none font-sans">
-                {/* Экран вывода */}
                 <div className="text-white text-4xl text-right mb-4 px-2 overflow-hidden text-ellipsis whitespace-nowrap">
                     {display}
                 </div>
                 
-                {/* Сетка кнопок */}
                 <div className="grid grid-cols-4 gap-2">
                     {buttons.map((btn, idx) => (
                         <button
@@ -135,7 +143,6 @@ const CalculatorWindow = ({ windowName, setWindowsState }: CalculatorProps) => {
                         </button>
                     ))}
                     
-                    {/* Ноль растянут на 2 колонки */}
                     <button
                         onClick={() => inputDigit('0')}
                         className="col-span-2 h-12 rounded-full bg-zinc-700 text-white text-left pl-5 text-lg hover:bg-zinc-600 transition-colors active:opacity-70"

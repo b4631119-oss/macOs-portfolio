@@ -20,11 +20,21 @@ interface GitHubUser {
 interface GithubProps {
     windowName: keyof WindowsState;
     setWindowsState: Dispatch<SetStateAction<WindowsState>>;
+    onClose?: () => void; // Добавляем
 }
 
-const Github = ({ windowName, setWindowsState }: GithubProps) => {
+const Github = ({ windowName, setWindowsState, onClose }: GithubProps) => {
     const [user, setUser] = useState<GitHubUser | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+
+    // Функция закрытия
+    const handleClose = () => {
+        if (onClose) {
+            onClose();
+        } else {
+            setWindowsState((prev) => ({ ...prev, [windowName]: false }));
+        }
+    };
 
     useEffect(() => {
         const controller = new AbortController();
@@ -45,7 +55,6 @@ const Github = ({ windowName, setWindowsState }: GithubProps) => {
 
                 console.warn("GitHub API Error или лимит запросов. Подключаем локальный профиль.");
                 
-                // Безопасный фоллбэк: если API лежит, собираем данные из констант и локальных ссылок
                 setUser({
                     avatar_url: `https://github.com/${userDetails.githubUsername}.png`,
                     name: userDetails.githubUsername,
@@ -72,14 +81,13 @@ const Github = ({ windowName, setWindowsState }: GithubProps) => {
             width="60vw"
             height="65vh"
             title="GitHub Portfolio"
-            onClose={() => setWindowsState((prev) => ({ ...prev, [windowName]: false }))}
+            onClose={handleClose} // Используем новую функцию
         >
             <div className="flex flex-col md:flex-row h-full w-full bg-[#09090b] text-zinc-100 overflow-hidden font-sans selection:bg-indigo-500/30 relative">
                 {/* Background Grid Pattern */}
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
 
                 {loading || !user ? (
-                    /* --- СТИЛЬНЫЙ СКЕЛЕТОН ДЛЯ ЗАГРУЗКИ --- */
                     <div className="flex flex-col md:flex-row w-full h-full animate-pulse relative z-10">
                         <div className="w-full md:w-[280px] p-6 border-b md:border-b-0 md:border-r border-white/5 bg-black/20 flex flex-col items-center justify-between">
                             <div className="flex flex-col items-center w-full">
@@ -149,7 +157,6 @@ const Github = ({ windowName, setWindowsState }: GithubProps) => {
                             </div>
                         </aside>
 
-                        {/* --- Правая колонка: Проекты --- */}
                         <div className="flex-1 relative z-10 flex flex-col min-w-0 bg-gradient-to-br from-transparent to-white/[0.02] overflow-hidden">
                             <div className="p-5 border-b border-white/5 flex items-center justify-between bg-black/20 backdrop-blur-md shrink-0">
                                 <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
@@ -166,7 +173,6 @@ const Github = ({ windowName, setWindowsState }: GithubProps) => {
                                     {projects.map((project, index) => (
                                         <div key={index} className="group relative bg-[#121214] hover:bg-[#18181b] rounded-xl border border-white/5 hover:border-indigo-500/30 transition-all duration-300 flex overflow-hidden h-32 shrink-0">
                                             
-                                            {/* Превью проекта */}
                                             <div className="w-28 md:w-40 relative overflow-hidden bg-zinc-900 border-r border-white/5 shrink-0">
                                                 <img
                                                     src={project.image}
@@ -175,7 +181,6 @@ const Github = ({ windowName, setWindowsState }: GithubProps) => {
                                                 />
                                             </div>
 
-                                            {/* Контент карточки */}
                                             <div className="flex-1 p-3 md:p-4 flex flex-col justify-between min-w-0">
                                                 <div>
                                                     <div className="flex items-center justify-between gap-2">
@@ -196,7 +201,6 @@ const Github = ({ windowName, setWindowsState }: GithubProps) => {
                                                     </p>
                                                 </div>
 
-                                                {/* Теги технологий */}
                                                 <div className="flex gap-1.5 mt-2 overflow-hidden flex-wrap">
                                                     {project.tech.slice(0, 4).map((t, i) => (
                                                         <span key={i} className="text-[9px] px-1.5 py-0.5 bg-white/5 text-zinc-400 rounded border border-white/5 whitespace-nowrap">
@@ -218,4 +222,4 @@ const Github = ({ windowName, setWindowsState }: GithubProps) => {
     )
 }
 
-export default Github;
+export default Github

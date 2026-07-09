@@ -9,7 +9,12 @@ interface WindowsState {
   calculator: boolean;
 }
 
-const Dock = ({ setWindowsState, windowsState }: { setWindowsState: Dispatch<SetStateAction<WindowsState>>, windowsState: WindowsState }) => {
+interface DockProps {
+  setWindowsState: Dispatch<SetStateAction<WindowsState>>;
+  windowsState: WindowsState;
+}
+
+const Dock = ({ setWindowsState, windowsState }: DockProps) => {
     const icons = [
         { 
             src: "github.svg", 
@@ -51,17 +56,27 @@ const Dock = ({ setWindowsState, windowsState }: { setWindowsState: Dispatch<Set
     };
 
     return (
-        <footer className="w-full relative">
-            <div className='dock-container'>
+        <footer className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+            <div className="flex items-center gap-3 px-4 py-2 bg-[#1a1a1a]/80 backdrop-blur-xl rounded-2xl border border-[#2a2a2a] shadow-2xl">
                 {icons.map((icon, index) => (
-                    <div key={index} onClick={() => handleIconClick(icon.key)}>
+                    <div 
+                        key={index} 
+                        onClick={() => handleIconClick(icon.key)}
+                        className="relative"
+                    >
                         <Tooltip delayDuration={100}>
                             <TooltipTrigger asChild>
-                                <img
-                                    className={`dock-icons p-2 rounded-lg ${icon.color} cursor-pointer transition-all duration-200 hover:scale-110 active:scale-95`}
-                                    src={`./doc-icons/${icon.src}`}
-                                    alt={icon.alt}
-                                />
+                                <div className="relative">
+                                    <img
+                                        className={`w-12 h-12 p-2 rounded-xl ${icon.color} cursor-pointer transition-all duration-200 hover:scale-110 hover:-translate-y-1 active:scale-95`}
+                                        src={`./doc-icons/${icon.src}`}
+                                        alt={icon.alt}
+                                    />
+                                    {/* Индикатор активного окна */}
+                                    {windowsState[icon.key] && (
+                                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full" />
+                                    )}
+                                </div>
                             </TooltipTrigger>
                             <TooltipContent className="bg-gray-800 border-gray-700">
                                 <p className="text-sm text-gray-200">{icon.alt}</p>

@@ -8,9 +8,19 @@ interface CalendarWindowProps {
     windowName: keyof WindowsState;
     setWindowsState: Dispatch<SetStateAction<WindowsState>>;
     title?: string;
+    onClose?: () => void; // Добавляем
 }
 
-const CalendarWindow = ({ windowName, setWindowsState, title = "TaskMate Calendar" }: CalendarWindowProps) => {
+const CalendarWindow = ({ windowName, setWindowsState, onClose, title = "TaskMate Calendar" }: CalendarWindowProps) => {
+    // Функция закрытия
+    const handleClose = () => {
+        if (onClose) {
+            onClose();
+        } else {
+            setWindowsState((prev) => ({ ...prev, [windowName]: false }));
+        }
+    };
+
     return (
         <MacWindow
             x={150}
@@ -18,7 +28,7 @@ const CalendarWindow = ({ windowName, setWindowsState, title = "TaskMate Calenda
             width="80vw" 
             height="80vh"
             title={title}
-            onClose={() => setWindowsState((prev) => ({ ...prev, [windowName]: false }))}
+            onClose={handleClose} // Используем новую функцию
         >
             <div className="w-full h-full bg-[#0b0b0b] relative overflow-hidden">
                 <iframe 

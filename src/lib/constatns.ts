@@ -73,7 +73,6 @@ export const projects = [
 export interface WindowsState {
  github: boolean;
   note: boolean;
-  cli: boolean;
   calender: boolean;
   calculator: boolean; // Добавили сюда!
 }
