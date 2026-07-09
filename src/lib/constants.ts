@@ -61,18 +61,18 @@ export const projects = [
     },
   {
         title: "Cuaderno",
-        description: "Цифровая тетрадь для заметок и личной продуктивности. Интегрирована система кастомизации обложек, удобная структура файлов и автоматический деплой.",
+        description: "Цифрая тетрадь для заметок и личной продуктивности. Интегрирована система кастомизации обложек, удобная структура файлов и автоматический деплой.",
         tech: ["React", "Next.js", "TypeScript", "Tailwind CSS"],
-        image: "https://double.kg/wp-content/uploads/2c614fe6f19911eeabc9a8a15984109f_2c614fe7f19911eeabc9a8a15984109f-1024x1024.jpg", // Сюда потом закинешь скриншот интерфейса cuaderno-nine.vercel.app
-        github: "https://github.com/b4631119-oss/cuaderno", // Твой репозиторий с картинки
+        image: "https://double.kg/wp-content/uploads/2c614fe6f19911eeabc9a8a15984109f_2c614fe7f19911eeabc9a8a15984109f-1024x1024.jpg",
+        github: "https://github.com/b4631119-oss/cuaderno",
         live: "https://cuaderno-nine.vercel.app"
     },
  
 ];
 
 export interface WindowsState {
- github: boolean;
+  github: boolean;
   note: boolean;
   calender: boolean;
-  calculator: boolean; // Добавили сюда!
+  calculator: boolean;
 }

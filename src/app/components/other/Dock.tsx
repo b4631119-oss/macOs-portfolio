@@ -1,3 +1,5 @@
+"use client"
+
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dispatch, SetStateAction } from "react";
 
@@ -26,7 +28,7 @@ const Dock = ({ setWindowsState, windowsState }: DockProps) => {
             alt: "Calendar", 
             color: "bg-gradient-to-b from-[#7A83FF] to-[#5856D6]", 
             key: "calender" as const
-        },
+        }, 
         { 
             src: "note.svg", 
             alt: "Notes", 

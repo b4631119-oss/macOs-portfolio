@@ -2,7 +2,7 @@
 
 import React from 'react'
 import MacWindow from '../windows/MacWindow'
-import { wallpapersList } from '@/lib/constatns'
+import { wallpapersList } from '@/lib/constants'
 
 interface WallpaperWindowProps {
     isOpen: boolean;

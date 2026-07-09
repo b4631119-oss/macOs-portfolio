@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import MacWindow from './MacWindow';
 
 interface WindowsState {
@@ -28,26 +28,19 @@ interface WindowManagerProps {
 const WindowManager = ({ windowsState, onClose, windowConfigs }: WindowManagerProps) => {
   const [focusedWindow, setFocusedWindow] = useState<string | null>(null);
   
-  // Вычисляем порядок окон через useMemo
-  const windowOrder = useMemo(() => {
+  // Получаем список активных окон
+  const activeWindows = useMemo(() => {
     return Object.entries(windowsState)
       .filter(([_, isOpen]) => isOpen)
       .map(([id]) => id);
   }, [windowsState]);
 
-  // Проверяем фокус при рендере
-  const activeWindows = useMemo(() => 
-    Object.entries(windowsState)
-      .filter(([_, isOpen]) => isOpen)
-      .map(([id]) => id),
-    [windowsState]
-  );
-
-  // Если фокус на закрытом окне - сбрасываем
-  if (focusedWindow && !activeWindows.includes(focusedWindow)) {
-    // Используем setTimeout чтобы избежать ошибки
-    setTimeout(() => setFocusedWindow(null), 0);
-  }
+  // Сбрасываем фокус если окно закрыто
+  useEffect(() => {
+    if (focusedWindow && !activeWindows.includes(focusedWindow)) {
+      setFocusedWindow(null);
+    }
+  }, [activeWindows, focusedWindow]);
 
   const handleFocus = (id: string) => {
     setFocusedWindow(id);
@@ -58,10 +51,6 @@ const WindowManager = ({ windowsState, onClose, windowConfigs }: WindowManagerPr
     const handleAltTab = (e: KeyboardEvent) => {
       if (e.key === 'Tab' && e.altKey) {
         e.preventDefault();
-        const activeWindows = Object.entries(windowsState)
-          .filter(([_, isOpen]) => isOpen)
-          .map(([id]) => id);
-
         if (activeWindows.length === 0) return;
 
         const currentIndex = activeWindows.indexOf(focusedWindow || '');
@@ -76,16 +65,15 @@ const WindowManager = ({ windowsState, onClose, windowConfigs }: WindowManagerPr
 
     window.addEventListener('keydown', handleAltTab);
     return () => window.removeEventListener('keydown', handleAltTab);
-  }, [focusedWindow, windowsState]);
+  }, [focusedWindow, activeWindows]);
 
   // Рендерим окна
   const renderWindows = () => {
     const windows: React.ReactNode[] = [];
-    const sortedWindows = [...windowOrder];
 
-    sortedWindows.forEach((id, index) => {
+    activeWindows.forEach((id, index) => {
       const config = windowConfigs[id as keyof WindowsState];
-      if (!config || !windowsState[id as keyof WindowsState]) return;
+      if (!config) return;
 
       const isFocused = focusedWindow === id;
       const zIndex = 40 + index * 5;
@@ -99,9 +87,10 @@ const WindowManager = ({ windowsState, onClose, windowConfigs }: WindowManagerPr
           width={config.width}
           height={config.height}
           title={config.title}
-          isVisible={windowsState[id as keyof WindowsState]}
+          isVisible={true}
           onClose={() => onClose(id as keyof WindowsState)}
           onFocus={handleFocus}
+          isFocused={isFocused}
           zIndex={isFocused ? zIndex + 10 : zIndex}
         >
           {config.component}

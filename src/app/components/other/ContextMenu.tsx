@@ -10,6 +10,28 @@ interface ContextMenuProps {
 
 // Named export aur default dono ka setup kar dete hain taaki koi error na aaye
 export const ContextMenu = ({ x, y, onClose, onChangeWallpaper }: ContextMenuProps) => {
+    const [coords, setCoords] = React.useState({ x, y });
+
+    React.useEffect(() => {
+        const menuWidth = 256;
+        const menuHeight = 240;
+        
+        let adjustedX = x;
+        let adjustedY = y;
+
+        if (x + menuWidth > window.innerWidth) {
+            adjustedX = window.innerWidth - menuWidth - 10;
+        }
+        if (y + menuHeight > window.innerHeight) {
+            adjustedY = window.innerHeight - menuHeight - 10;
+        }
+
+        adjustedX = Math.max(10, adjustedX);
+        adjustedY = Math.max(10, adjustedY);
+
+        setCoords({ x: adjustedX, y: adjustedY });
+    }, [x, y]);
+
     const menuItems = [
         { label: "New Folder", action: () => console.log("New Folder") },
         { label: "Get Info", action: () => console.log("Info") },
@@ -31,7 +53,7 @@ export const ContextMenu = ({ x, y, onClose, onChangeWallpaper }: ContextMenuPro
 
             <div
                 className="fixed z-[200] w-64 max-w-[90vw] bg-[#1e1e1e]/70 backdrop-blur-2xl border border-white/10 rounded-lg py-1.5 shadow-2xl text-white select-none animate-in fade-in zoom-in duration-150"
-                style={{ top: y, left: x }}
+                style={{ top: coords.y, left: coords.x }}
             >
                 {menuItems.map((item, index) => (
                     <React.Fragment key={index}>

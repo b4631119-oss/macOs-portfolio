@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react";
 
-import { wallpapersList } from "@/lib/constatns";
+import { wallpapersList } from "@/lib/constants";
 import ContextMenu from "./components/other/ContextMenu";
 import WallpaperWindow from "./components/other/WallpaperWindow";
 import Navigation from "./components/other/Navigation";
@@ -43,7 +43,7 @@ const Page = () => {
       y: 80,
       width: 900,
       height: 650,
-      component: <Github windowName="github" setWindowsState={setWindowsState} />
+      component: <Github />
     },
     note: {
       title: "Notes",
@@ -51,7 +51,7 @@ const Page = () => {
       y: 100,
       width: 600,
       height: 500,
-      component: <Note windowName="note" setWindowsState={setWindowsState} />
+      component: <Note />
     },
     calender: {
       title: "Calendar",
@@ -59,7 +59,7 @@ const Page = () => {
       y: 90,
       width: 750,
       height: 550,
-      component: <CalendarWindow windowName="calender" setWindowsState={setWindowsState} />
+      component: <CalendarWindow />
     },
     calculator: {
       title: "Calculator",
@@ -67,7 +67,7 @@ const Page = () => {
       y: 110,
       width: 400,
       height: 550,
-      component: <CalculatorWindow windowName="calculator" setWindowsState={setWindowsState} />
+      component: <CalculatorWindow />
     }
   };
 

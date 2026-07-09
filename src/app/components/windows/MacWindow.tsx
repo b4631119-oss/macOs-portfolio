@@ -1,6 +1,6 @@
 "use client"
 
-import { dots, userDetails } from '@/lib/constatns';
+import { dots, userDetails } from '@/lib/constants';
 import React, { useState, useEffect, useRef } from 'react'
 import { Rnd } from 'react-rnd'
 import { motion } from 'framer-motion';
@@ -18,6 +18,7 @@ interface MacWindowProps {
     isVisible?: boolean;
     windowId?: string; // Сделал опциональным
     onFocus?: (id: string) => void;
+    isFocused?: boolean; // Добавили управляемый фокус
 }
 
 const MacWindow = ({ 
@@ -32,13 +33,15 @@ const MacWindow = ({
     zIndex = 40,
     isVisible = true,
     windowId = 'default', // Значение по умолчанию
-    onFocus
+    onFocus,
+    isFocused: controlledIsFocused
 }: MacWindowProps) => {
     const [isMaximized, setIsMaximized] = useState(false);
     const [position, setPosition] = useState({ x: initialX, y: initialY });
     const [size, setSize] = useState({ width: initialWidth, height: initialHeight });
     const [savedState, setSavedState] = useState<{ x: number; y: number; width: string | number; height: string | number } | null>(null);
-    const [isFocused, setIsFocused] = useState(false);
+    const [localIsFocused, setLocalIsFocused] = useState(false);
+    const isFocused = controlledIsFocused !== undefined ? controlledIsFocused : localIsFocused;
     
     const [navHeight, setNavHeight] = useState(40);
     const [dockHeight, setDockHeight] = useState(60);
@@ -74,7 +77,7 @@ const MacWindow = ({
     }, []);
 
     const handleWindowClick = () => {
-        setIsFocused(true);
+        setLocalIsFocused(true);
         if (onFocus && windowId) {
             onFocus(windowId);
         }

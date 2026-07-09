@@ -1,16 +1,8 @@
 "use client"
 
-import React, { useState, Dispatch, SetStateAction } from 'react'
-import MacWindow from '../MacWindow'
-import { WindowsState } from '@/lib/constatns'
+import React, { useState } from 'react'
 
-interface CalculatorProps {
-    windowName: keyof WindowsState;
-    setWindowsState: Dispatch<SetStateAction<WindowsState>>;
-    onClose?: () => void; // Добавляем
-}
-
-const CalculatorWindow = ({ windowName, setWindowsState, onClose }: CalculatorProps) => {
+const CalculatorWindow = () => {
     const [display, setDisplay] = useState('0')
     const [prevValue, setPrevValue] = useState<number | null>(null)
     const [operation, setOperation] = useState<string | null>(null)
@@ -87,15 +79,6 @@ const CalculatorWindow = ({ windowName, setWindowsState, onClose }: CalculatorPr
         }
     }
 
-    // Функция закрытия
-    const handleClose = () => {
-        if (onClose) {
-            onClose();
-        } else {
-            setWindowsState((prev) => ({ ...prev, [windowName]: false }));
-        }
-    };
-
     const buttons = [
         { label: 'C', bg: 'bg-zinc-400 text-black hover:bg-zinc-300', action: clearAll },
         { label: '±', bg: 'bg-zinc-400 text-black hover:bg-zinc-300', action: toggleSign },
@@ -119,51 +102,42 @@ const CalculatorWindow = ({ windowName, setWindowsState, onClose }: CalculatorPr
     ]
 
     return (
-        <MacWindow
-            x={300}
-            y={150}
-            width="260px"
-            height="420px"
-            title="Калькулятор"
-            onClose={handleClose} // Используем новую функцию
-        >
-            <div className="w-full h-full bg-zinc-900 p-3 flex flex-col justify-end select-none font-sans">
-                <div className="text-white text-4xl text-right mb-4 px-2 overflow-hidden text-ellipsis whitespace-nowrap">
-                    {display}
-                </div>
-                
-                <div className="grid grid-cols-4 gap-2">
-                    {buttons.map((btn, idx) => (
-                        <button
-                            key={idx}
-                            onClick={btn.action}
-                            className={`h-12 w-12 rounded-full font-medium text-lg flex items-center justify-center transition-colors active:opacity-70 ${btn.bg}`}
-                        >
-                            {btn.label}
-                        </button>
-                    ))}
-                    
-                    <button
-                        onClick={() => inputDigit('0')}
-                        className="col-span-2 h-12 rounded-full bg-zinc-700 text-white text-left pl-5 text-lg hover:bg-zinc-600 transition-colors active:opacity-70"
-                    >
-                        0
-                    </button>
-                    <button
-                        onClick={inputDecimal}
-                        className="h-12 w-12 rounded-full bg-zinc-700 text-white font-medium text-lg flex items-center justify-center hover:bg-zinc-600 transition-colors active:opacity-70"
-                    >
-                        ,
-                    </button>
-                    <button
-                        onClick={handleEquals}
-                        className="h-12 w-12 rounded-full bg-amber-500 text-white font-medium text-lg flex items-center justify-center hover:bg-amber-400 transition-colors active:opacity-70"
-                    >
-                        =
-                    </button>
-                </div>
+        <div className="w-full h-full bg-zinc-900 p-3 flex flex-col justify-end select-none font-sans">
+            <div className="text-white text-4xl text-right mb-4 px-2 overflow-hidden text-ellipsis whitespace-nowrap">
+                {display}
             </div>
-        </MacWindow>
+            
+            <div className="grid grid-cols-4 gap-2">
+                {buttons.map((btn, idx) => (
+                    <button
+                        key={idx}
+                        onClick={btn.action}
+                        className={`h-12 w-12 rounded-full font-medium text-lg flex items-center justify-center transition-colors active:opacity-70 ${btn.bg}`}
+                    >
+                        {btn.label}
+                    </button>
+                ))}
+                
+                <button
+                    onClick={() => inputDigit('0')}
+                    className="col-span-2 h-12 rounded-full bg-zinc-700 text-white text-left pl-5 text-lg hover:bg-zinc-600 transition-colors active:opacity-70"
+                >
+                    0
+                </button>
+                <button
+                    onClick={inputDecimal}
+                    className="h-12 w-12 rounded-full bg-zinc-700 text-white font-medium text-lg flex items-center justify-center hover:bg-zinc-600 transition-colors active:opacity-70"
+                >
+                    ,
+                </button>
+                <button
+                    onClick={handleEquals}
+                    className="h-12 w-12 rounded-full bg-amber-500 text-white font-medium text-lg flex items-center justify-center hover:bg-amber-400 transition-colors active:opacity-70"
+                >
+                    =
+                </button>
+            </div>
+        </div>
     )
 }
 
