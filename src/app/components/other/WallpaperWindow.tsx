@@ -21,11 +21,11 @@ const WallpaperWindow = ({ isOpen, onClose, currentWallpaper, onSelect }: Wallpa
             zIndex={100}
             disableMaximize={true}
     >
-            <div className="w-full h-full p-4 bg-[#0d0d0d] overflow-y-auto">
-                <h2 className="text-white text-lg font-semibold mb-4">Select Wallpaper</h2>
-                <div className="grid grid-cols-2 gap-4">
-                    {wallpapersList.map((wp, index) => (
-                        <div
+     <div className="w-full h-full p-4 bg-[#0d0d0d] overflow-y-auto">
+        <h2 className="text-white text-lg font-semibold mb-4">Select Wallpaper</h2>
+            <div className="grid grid-cols-2 gap-4">
+                {wallpapersList.map((wp, index) => (
+                    <div
                             key={index}
                             className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
                                 currentWallpaper === wp.url 
