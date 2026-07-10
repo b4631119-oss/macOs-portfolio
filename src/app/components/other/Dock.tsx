@@ -25,7 +25,7 @@ const Dock = ({ setWindowsState, windowsState }: DockProps) => {
             key: "github" as const
         }, 
         { 
-            src: "jerdesh.png", // Закинь иконку/логотип в папку public/doc-icons/jerdesh.png
+            src: "/jerdesh.png",
             alt: "JERDESH-MOSCVA", 
             color: "bg-gradient-to-b from-[#1e3a8a] to-[#0f172a]", // Красивый синий градиент
             key: "jerdesh" as const
