@@ -29,8 +29,8 @@ const WallpaperWindow = ({ isOpen, onClose, currentWallpaper, onSelect }: Wallpa
                             key={index}
                             className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
                                 currentWallpaper === wp.url 
-                                    ? 'border-blue-500 scale-105' 
-                                    : 'border-transparent hover:border-gray-500'
+                            ? 'border-blue-500 scale-105' 
+                              : 'border-transparent hover:border-gray-500'
                             }`}
                             onClick={() => onSelect(wp.url)}
 >
@@ -47,9 +47,9 @@ const WallpaperWindow = ({ isOpen, onClose, currentWallpaper, onSelect }: Wallpa
                                 </div>
                             )}
                         </div>
-                    ))}
-                </div>
+                ))}
             </div>
+        </div>
         </MacWindow>
     )
 }
