@@ -11,7 +11,7 @@ interface WallpaperWindowProps {
 const WallpaperWindow = ({ isOpen, onClose, currentWallpaper, onSelect }: WallpaperWindowProps) => {
     if (!isOpen) return null;
     return (
-        <MacWindow
+    <MacWindow
             x={100}
             y={80}
             width="600px"
@@ -33,7 +33,7 @@ const WallpaperWindow = ({ isOpen, onClose, currentWallpaper, onSelect }: Wallpa
                                     : 'border-transparent hover:border-gray-500'
                             }`}
                             onClick={() => onSelect(wp.url)}
-                        >
+>
                             <img 
                                 src={wp.url} 
                                 alt={`Wallpaper ${index + 1}`}
