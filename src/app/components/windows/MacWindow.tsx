@@ -53,8 +53,8 @@ const MacWindow = ({
     const windowRef = useRef<HTMLDivElement>(null);
     const clampedInitialized = useRef(false);
 
-    // Чувствительность магнитных зон (в пикселях от краев экрана)
-    const SNAP_THRESHOLD = 30;
+    // БОЛЬШЕ НЕ НУЖНО: Чувствительность магнитных зон (в пикселях от краев экрана)
+    // const SNAP_THRESHOLD = 30;
 
     // Синхронизация состояния максимизации с тегом HTML для управления стилями Дока
     useEffect(() => {
@@ -81,7 +81,6 @@ const MacWindow = ({
             const height = nav.getBoundingClientRect().height;
             if (height > 0) {
                 currentNavHeight = height;
-                // Асинхронный пуш в стейт, чтобы не ломать первый рендер
                 requestAnimationFrame(() => {
                     setNavHeight(height);
                 });
@@ -190,22 +189,13 @@ const MacWindow = ({
 
         const screenW = window.innerWidth;
         const screenH = window.innerHeight;
-        const mouseX = d.x;
         const mouseY = d.y;
 
-        // Зона Максимизации (Вверху)
+        // ВЕРХНИЙ КРАЙ: Оставляем только эту проверку
         if (mouseY <= navHeight + 5) {
             setSnapPreview({ x: 0, y: navHeight, width: screenW, height: screenH - navHeight });
         } 
-        // Левый край
-        else if (mouseX <= SNAP_THRESHOLD) {
-            setSnapPreview({ x: 0, y: navHeight, width: screenW / 2, height: screenH - navHeight });
-        } 
-        // Правый край
-        else if (mouseX + (typeof size.width === 'number' ? size.width : parseInt(String(size.width))) >= screenW - SNAP_THRESHOLD) {
-            setSnapPreview({ x: screenW / 2, y: navHeight, width: screenW / 2, height: screenH - navHeight });
-        } 
-        // Окно в безопасной зоне — убираем подсказку
+        // ИСПРАВЛЕНО: Убраны проверки для левого и правого краев
         else {
             setSnapPreview(null);
         }
@@ -217,27 +207,17 @@ const MacWindow = ({
 
         const screenW = window.innerWidth;
         const screenH = window.innerHeight;
-        const mouseX = d.x;
         const mouseY = d.y;
 
+        // ВЕРХНИЙ КРАЙ: Оставляем логику фуллскрина
         if (mouseY <= navHeight + 5 && !disableMaximize) {
             setSavedState({ x: position.x, y: position.y, width: size.width, height: size.height });
             setPosition({ x: 0, y: navHeight });
             setSize({ width: screenW, height: screenH - navHeight });
-            setIsMaximized(true);
+            setIsMaximized(true); 
         } 
-        else if (mouseX <= SNAP_THRESHOLD) {
-            setSavedState({ x: position.x, y: position.y, width: size.width, height: size.height });
-            setPosition({ x: 0, y: navHeight });
-            setSize({ width: screenW / 2, height: screenH - navHeight });
-            setIsMaximized(true);
-        } 
-        else if (mouseX + (typeof size.width === 'number' ? size.width : parseInt(String(size.width))) >= screenW - SNAP_THRESHOLD) {
-            setSavedState({ x: position.x, y: position.y, width: size.width, height: size.height });
-            setPosition({ x: screenW / 2, y: navHeight });
-            setSize({ width: screenW / 2, height: screenH - navHeight });
-            setIsMaximized(true);
-        } 
+        // ИСПРАВЛЕНО: Убрана логика деления экрана для боковых краев.
+        // Просто сохраняем текущие координаты окна, где его отпустили.
         else {
             setPosition({ x: d.x, y: d.y });
         }
