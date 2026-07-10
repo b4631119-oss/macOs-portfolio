@@ -1,19 +1,15 @@
 "use client"
 
-import React from 'react'
 import MacWindow from '../windows/MacWindow'
 import { wallpapersList } from '@/lib/constants'
-
 interface WallpaperWindowProps {
     isOpen: boolean;
     onClose: () => void;
     currentWallpaper: string;
     onSelect: (url: string) => void;
 }
-
 const WallpaperWindow = ({ isOpen, onClose, currentWallpaper, onSelect }: WallpaperWindowProps) => {
     if (!isOpen) return null;
-
     return (
         <MacWindow
             x={100}
@@ -24,7 +20,7 @@ const WallpaperWindow = ({ isOpen, onClose, currentWallpaper, onSelect }: Wallpa
             onClose={onClose}
             zIndex={100}
             disableMaximize={true}
-        >
+>
             <div className="w-full h-full p-4 bg-[#0d0d0d] overflow-y-auto">
                 <h2 className="text-white text-lg font-semibold mb-4">Select Wallpaper</h2>
                 <div className="grid grid-cols-2 gap-4">
