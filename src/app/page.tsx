@@ -14,18 +14,32 @@ import Note from "./components/windows/main_content_screens/Note";
 import CalendarWindow from "./components/windows/main_content_screens/CalendarWindow"; 
 import CalculatorWindow from "./components/windows/main_content_screens/CalculatorWindow";
 import JerdeshWindowContent from "./components/other/jerdesh";
+// 1. ИМПОРТИРУЕМ НАШ НОВЫЙ ТЕРМИНАЛ ZELLIJ
+import ZellijTerminal from "./components/windows/main_content_screens/ZellijTerminal"; 
+
+// Выносим интерфейс стейта окон для типизации
+interface WindowsState {
+  github: boolean;
+  note: boolean;
+  calender: boolean;
+  calculator: boolean;
+  terminal: boolean;
+  jerdesh: boolean;
+}
 
 const Page = () => {
   const [wallpaper, setWallpaper] = useState(wallpapersList[0].url);
   const [isWindowOpen, setIsWindowOpen] = useState(false);
   const [menu, setMenu] = useState<{ x: number, y: number } | null>(null);
   
-  const [windowsState, setWindowsState] = useState({
+  // Состояние окон с добавленным терминалом
+  const [windowsState, setWindowsState] = useState<WindowsState>({
     github: false,
     note: false,
     calender: false,
     calculator: false, 
-    jerdesh: false // Исправлено: заменено ";" на ","
+    terminal: false, // Инициализация терминала
+    jerdesh: false 
   });
 
   const handleContextMenu = (e: React.MouseEvent) => {
@@ -34,10 +48,11 @@ const Page = () => {
     setMenu({ x: e.clientX, y: e.clientY });
   };
 
-  const handleCloseWindow = (id: keyof typeof windowsState) => {
+  const handleCloseWindow = (id: keyof WindowsState) => {
     setWindowsState(prev => ({ ...prev, [id]: false }));
   };
 
+  // 2. ДОБАВИЛИ КОНФИГУРАЦИЮ ДЛЯ ТЕРМИНАЛА В windowConfigs
   const windowConfigs = {
     github: {
       title: "GitHub",
@@ -47,7 +62,15 @@ const Page = () => {
       height: 650,
       component: <Github />
     },
-    jerdesh: { // Полноценная конфигурация для Jerdesh
+    terminal: {
+      title: "justnpm@linux: ~ (Zellij)",
+      x: 120,
+      y: 130,
+      width: 800,
+      height: 500,
+      component: <ZellijTerminal />
+    },
+    jerdesh: { 
       title: "JERDESH-MOSCVA — Маркетплейс",
       x: 80,
       y: 90,

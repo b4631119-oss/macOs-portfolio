@@ -73,4 +73,5 @@ export interface WindowsState {
   calender: boolean;
   calculator: boolean;
   jerdesh:boolean;
+  terminal: boolean,
 }
