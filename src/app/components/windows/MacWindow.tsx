@@ -47,16 +47,12 @@ const MacWindow = ({
     
     const [navHeight, setNavHeight] = useState(40);
 
-    // СОСТОЯНИЕ ДЛЯ МАГНИТНОГО ПРЕВЬЮ (Оверлей подсказки)
     const [snapPreview, setSnapPreview] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
 
     const windowRef = useRef<HTMLDivElement>(null);
     const clampedInitialized = useRef(false);
 
-    // БОЛЬШЕ НЕ НУЖНО: Чувствительность магнитных зон (в пикселях от краев экрана)
-    // const SNAP_THRESHOLD = 30;
-
-    // Синхронизация состояния максимизации с тегом HTML для управления стилями Дока
+ 
     useEffect(() => {
         const html = document.documentElement;
         if (isMaximized) {
@@ -183,7 +179,6 @@ const MacWindow = ({
         }
     };
 
-    // 1. ДИНАМИЧЕСКИЙ РАСЧЕТ И ОТОБРАЖЕНИЕ ПРЕВЬЮ ПРИ ТАСКАНИИ ОКНА
     const handleDrag = (_e: MouseEvent | TouchEvent, d: DraggableData) => {
         if (isMaximized) return;
 
@@ -273,7 +268,7 @@ const MacWindow = ({
                         : '0 10px 30px -10px rgba(0, 0, 0, 0.5)'
                 }}
                 bounds="window"
-            >
+>
                 <motion.div
                     ref={windowRef}
                     initial={{ scale: 0.92, opacity: 0 }}
