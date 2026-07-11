@@ -196,7 +196,6 @@ const MacWindow = ({
         }
     };
 
-    // 2. ФИКСАЦИЯ ПРИЛИПАНИЯ ПРИ ОТПУСКАНИИ МЫШКИ
     const handleDragStop = (_e: MouseEvent | TouchEvent, d: DraggableData) => {
         if (isMaximized) return;
 
