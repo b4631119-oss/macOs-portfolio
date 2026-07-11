@@ -54,9 +54,7 @@ const ZellijTerminal = () => {
     window.addEventListener('resize', handleResize);
 
     // Стартовый текст
-    term.writeln('\x1b[1;32mWelcome to Linux (Zellij Multiplexer Session)\x1b[0m');
-    term.writeln('Type commands like "neofetch", "clear" or "help".\r\n');
-    term.write('\x1b[1;35mjustnpm@linux:~$\x1b[0m ');
+    term.write('\x1b[1;35mDevRoot@linux:~$\x1b[0m ');
 
     let currentLine = '';
 
@@ -70,7 +68,7 @@ const ZellijTerminal = () => {
         if (cmd === 'help') {
           term.writeln('Available commands: help, clear, neofetch, zellij');
         } else if (cmd === 'neofetch') {
-          term.writeln('\x1b[1;34m   /\\_/\\   \x1b[0m  OS: Fedora Linux 2026');
+          term.writeln('\x1b[1;34m   /\\_/\\   \x1b[0m  OS:  Linux 2026');
           term.writeln('\x1b[1;34m  ( o.o )  \x1b[0m  Kernel: x86_64 Turbopack');
           term.writeln('\x1b[1;34m   > ^ <   \x1b[0m  Shell: zsh 5.9');
           term.writeln('             WM: Zellij (Rust)');
@@ -83,7 +81,7 @@ const ZellijTerminal = () => {
         }
 
         currentLine = '';
-        term.write('\x1b[1;35mjustnpm@linux:~$\x1b[0m ');
+        term.write('\x1b[1;35m:~$\x1b[0m ');
       } else if (code === 127) { // Backspace
         if (currentLine.length > 0) {
           currentLine = currentLine.slice(0, -1);
@@ -114,9 +112,6 @@ const ZellijTerminal = () => {
       <div className="bg-[#a6e3a1] text-[#11111b] text-[11px] px-3 py-1 flex items-center gap-4 font-sans font-bold select-none mt-2 rounded-md shrink-0">
         <span className="bg-[#11111b] text-[#a6e3a1] px-1.5 py-0.5 rounded text-[10px]">ZELLIJ</span>
         <div className="flex gap-3 text-[10px] md:text-[11px]">
-          <span>Ctrl + <span className="underline">p</span> Pane</span>
-          <span>Ctrl + <span className="underline">t</span> Tab</span>
-          <span>Ctrl + <span className="underline">n</span> Move</span>
         </div>
         <span className="ml-auto font-mono text-[10px] hidden sm:inline">session: portfolio</span>
       </div>
