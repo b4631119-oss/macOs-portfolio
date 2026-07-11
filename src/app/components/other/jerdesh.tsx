@@ -1,6 +1,5 @@
 "use client"
 
-import React from 'react'
 import { ExternalLink, RefreshCw } from "lucide-react"
 
 const JerdeshWindowContent = () => {
@@ -40,7 +39,6 @@ const JerdeshWindowContent = () => {
                 </a>
             </div>
             
-            {/* Живой фрейм приложения */}
             <div className="w-full flex-1 bg-white relative">
                 <iframe 
                     id="jerdesh-iframe"
