@@ -63,7 +63,6 @@ const MacWindow = ({
         return () => html.classList.remove('window-maximized');
     }, [isMaximized]);
 
-    // Initial clamp on mount to fit within smaller viewports
     useEffect(() => {
         if (clampedInitialized.current) return;
         clampedInitialized.current = true;
